@@ -5,27 +5,28 @@ import struct
 
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 
 
 def readMNISTdata():
-    with open('t10k-images-idx3-ubyte', 'rb') as f:
+    with open('../datasets/mnist/t10k-images-idx3-ubyte', 'rb') as f:
         magic, size = struct.unpack(">II", f.read(8))
         nrows, ncols = struct.unpack(">II", f.read(8))
         test_data = np.fromfile(f, dtype=np.dtype(np.uint8).newbyteorder('>'))
         test_data = test_data.reshape((size, nrows * ncols))
 
-    with open('t10k-labels-idx1-ubyte', 'rb') as f:
+    with open('../datasets/mnist/t10k-labels-idx1-ubyte', 'rb') as f:
         magic, size = struct.unpack(">II", f.read(8))
         test_labels = np.fromfile(f, dtype=np.dtype(np.uint8).newbyteorder('>'))
         test_labels = test_labels.reshape((size, 1))
 
-    with open('train-images-idx3-ubyte', 'rb') as f:
+    with open('../datasets/mnist/train-images-idx3-ubyte', 'rb') as f:
         magic, size = struct.unpack(">II", f.read(8))
         nrows, ncols = struct.unpack(">II", f.read(8))
         train_data = np.fromfile(f, dtype=np.dtype(np.uint8).newbyteorder('>'))
         train_data = train_data.reshape((size, nrows * ncols))
 
-    with open('train-labels-idx1-ubyte', 'rb') as f:
+    with open('../datasets/mnist/train-labels-idx1-ubyte', 'rb') as f:
         magic, size = struct.unpack(">II", f.read(8))
         train_labels = np.fromfile(f, dtype=np.dtype(np.uint8).newbyteorder('>'))
         train_labels = train_labels.reshape((size, 1))
@@ -33,9 +34,12 @@ def readMNISTdata():
     # augmenting a constant feature of 1 (absorbing the bias term)
     train_data = np.concatenate((np.ones([train_data.shape[0], 1]), train_data), axis=1)
     test_data = np.concatenate((np.ones([test_data.shape[0], 1]), test_data), axis=1)
-    np.random.seed(314)
+
+    rnd = int(random.random() * 1000)
+
+    np.random.seed(rnd)
     np.random.shuffle(train_labels)
-    np.random.seed(314)
+    np.random.seed(rnd)
     np.random.shuffle(train_data)
 
     X_train = train_data[:50000] / 256
@@ -142,7 +146,15 @@ epoch_best, acc_best, acc_train, W_best, accs, losses = train(X_train, t_train, 
 _, _, loss, acc = predict(X_test, W_best, t_test)
 
 print('For the test data: loss=', loss, 'and acc=', acc)
-#For the test data: loss= 0.00031469297870585317  and acc= 0.9232
+# For the test data: loss= 0.0003151124013475233 and acc= 0.9258
+
+plt.figure()
+plt.plot([x for x in range(MaxIter)], accs, color="blue", label="Accuracy")
+plt.plot([x for x in range(MaxIter)], losses, color="red", label="Training Loss")
+plt.xlabel('number of epochs')
+plt.legend()
+plt.tight_layout()
+plt.savefig('centralized_server.jpg')
 
 plt.figure()
 plt.plot([x for x in range(MaxIter)], accs, color="blue", label="Accuracy")

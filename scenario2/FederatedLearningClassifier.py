@@ -5,29 +5,30 @@ import struct
 
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 
 
 def readMNISTdata():
     global N_client
 
-    with open('t10k-images-idx3-ubyte', 'rb') as f:
+    with open('../datasets/mnist/t10k-images-idx3-ubyte', 'rb') as f:
         magic, size = struct.unpack(">II", f.read(8))
         nrows, ncols = struct.unpack(">II", f.read(8))
         test_data = np.fromfile(f, dtype=np.dtype(np.uint8).newbyteorder('>'))
         test_data = test_data.reshape((size, nrows * ncols))
 
-    with open('t10k-labels-idx1-ubyte', 'rb') as f:
+    with open('../datasets/mnist/t10k-labels-idx1-ubyte', 'rb') as f:
         magic, size = struct.unpack(">II", f.read(8))
         test_labels = np.fromfile(f, dtype=np.dtype(np.uint8).newbyteorder('>'))
         test_labels = test_labels.reshape((size, 1))
 
-    with open('train-images-idx3-ubyte', 'rb') as f:
+    with open('../datasets/mnist/train-images-idx3-ubyte', 'rb') as f:
         magic, size = struct.unpack(">II", f.read(8))
         nrows, ncols = struct.unpack(">II", f.read(8))
         train_data = np.fromfile(f, dtype=np.dtype(np.uint8).newbyteorder('>'))
         train_data = train_data.reshape((size, nrows * ncols))
 
-    with open('train-labels-idx1-ubyte', 'rb') as f:
+    with open('../datasets/mnist/train-labels-idx1-ubyte', 'rb') as f:
         magic, size = struct.unpack(">II", f.read(8))
         train_labels = np.fromfile(f, dtype=np.dtype(np.uint8).newbyteorder('>'))
         train_labels = train_labels.reshape((size, 1))
@@ -44,9 +45,11 @@ def readMNISTdata():
     del test_data
     del test_labels
 
-    np.random.seed(314)
+    rnd = int(random.random() * 1000)
+
+    np.random.seed(rnd)
     np.random.shuffle(all_labels)
-    np.random.seed(314)
+    np.random.seed(rnd)
     np.random.shuffle(all_data)
 
     # for server: 14K for train, 2K for validation and 4K for test
@@ -182,7 +185,16 @@ W_server, accs, losses = train_server()
 _, _, loss, acc = predict(server['test'][0], W_server, server['test'][1])
 
 print('For the test data: loss=', loss, 'and acc=', acc)
-#For the test data: loss= -0.0 and acc= 0.9135
+# For the test data: loss= 0.0 and acc= 0.91275
+
+
+plt.figure()
+plt.plot([x for x in range(MaxFLIter)], accs, color="blue", label="Accuracy")
+plt.plot([x for x in range(MaxFLIter)], losses, color="red", label="Training Loss")
+plt.xlabel('number of epochs')
+plt.legend()
+plt.tight_layout()
+plt.savefig('federated_learning.jpg')
 
 plt.figure()
 plt.plot([x for x in range(MaxFLIter)], accs, color="blue", label="Accuracy")

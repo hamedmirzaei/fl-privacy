@@ -20,4 +20,4 @@ For the first scenario we just implement the standard SR algorithm and evaluate 
 The researches showed that a FL system will reduce the accuracy of the model compared to its equivalent centralized model. Based on this idea, as the second scenario, we first simulate a FL system on a centralized server. For this simulation we considered 10 different clients each with their own dataset and without any conflict with others. Then, we implement the same SR model for each client and server. The aggregation at the server will be done by taking average of clients' model parameters (i.e. all clients have the same weight of 0.1). We randomly assigned 20K samples to the server (i.e. 14K for training, 2K for validation and 4K for testing) and 5K to each client (i.e. 4K for training and 1K for validation)
 
 ## Scenario 3
-In this scenario we try to add Gaussian noise to the model parameters of the implemented FL system
+In this scenario we try to add Gaussian noise to the model parameters of the implemented FL system based on [this](https://ieeexplore.ieee.org/abstract/document/9069945/) research paper.

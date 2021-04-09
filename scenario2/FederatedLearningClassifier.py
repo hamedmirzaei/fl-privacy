@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
-
 import struct
-
 import matplotlib.pyplot as plt
 import numpy as np
 import random
-
+import time
 
 def readMNISTdata():
     global N_client
@@ -180,12 +178,17 @@ MaxFLIter = 20
 # Main code starts here
 server, clients = readMNISTdata()
 
+start = time.time()
 W_server, accs, losses = train_server()
+end = time.time()
+
+print('time takes to train (s)', (end - start))
+# time takes to train (s) 648.348034620285
 
 _, _, loss, acc = predict(server['test'][0], W_server, server['test'][1])
 
 print('For the test data: loss=', loss, 'and acc=', acc)
-# For the test data: loss= 0.0 and acc= 0.91275
+# For the test data: loss= -0.0 and acc= 0.91925
 
 
 plt.figure()

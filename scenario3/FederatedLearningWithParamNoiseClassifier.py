@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-
 import struct
-
 import matplotlib.pyplot as plt
 import numpy as np
 import random
+import time
 
 
 def readMNISTdata():
@@ -161,12 +160,12 @@ def train_server():
                 train(clients[c]['train'][0], clients[c]['train'][1],
                       clients[c]['val'][0], clients[c]['val'][1], W_best)
             W_client /= max(1.0, np.linalg.norm(W_client, 1)/C)
-            W_client += np.random.normal(client_mu, client_sigma, size=W_client.shape)
+            W_client += np.random.normal(client_mu, client_sigma*client_sigma, size=W_client.shape)
             Ws_clients.append(W_client)
 
         # take average of W_client and update W_server
         W_server = np.sum(Ws_clients, axis=0)/N_client
-        W_server += np.random.normal(server_mu, server_sigma, size=W_server.shape)
+        W_server += np.random.normal(server_mu, server_sigma*server_sigma, size=W_server.shape)
 
     return W_server, accs_train, losses_train
 
@@ -190,12 +189,17 @@ MaxFLIter = 20
 # Main code starts here
 server, clients = readMNISTdata()
 
+start = time.time()
 W_server, accs, losses = train_server()
+end = time.time()
+
+print('time takes to train (s)', (end - start))
+# time takes to train (s) 492.78326392173767
 
 _, _, loss, acc = predict(server['test'][0], W_server, server['test'][1])
 
 print('For the test data: loss=', loss, 'and acc=', acc)
-# For the test data: loss= 0.13541628450742216 and acc= 0.6695
+# For the test data: loss= 0.07112466239947182 and acc= 0.81375
 
 plt.figure()
 plt.plot([x for x in range(MaxFLIter)], accs, color="blue", label="Accuracy")

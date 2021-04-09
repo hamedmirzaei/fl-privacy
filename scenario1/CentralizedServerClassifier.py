@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
-
 import struct
-
 import matplotlib.pyplot as plt
 import numpy as np
 import random
-
+import time
 
 def readMNISTdata():
     with open('../datasets/mnist/t10k-images-idx3-ubyte', 'rb') as f:
@@ -132,8 +130,6 @@ def train(X_train, y_train, X_val, t_val):
 # Main code starts here
 X_train, t_train, X_val, t_val, X_test, t_test = readMNISTdata()
 
-print(X_train.shape, t_train.shape, X_val.shape, t_val.shape, X_test.shape, t_test.shape)
-
 N_class = 10
 
 alpha = 0.1  # learning rate
@@ -141,12 +137,17 @@ batch_size = 100  # batch size
 MaxIter = 50  # Maximum iteration
 decay = 0.  # weight decay
 
-epoch_best, acc_best, acc_train, W_best, accs, losses = train(X_train, t_train, X_val, t_val)
+start = time.time()
+_, _, _, W_best, accs, losses = train(X_train, t_train, X_val, t_val)
+end = time.time()
+
+print('time takes to train (s)', (end - start))
+# time takes to train (s) 63.430556297302246
 
 _, _, loss, acc = predict(X_test, W_best, t_test)
 
 print('For the test data: loss=', loss, 'and acc=', acc)
-# For the test data: loss= 0.0003151124013475233 and acc= 0.9258
+# For the test data: loss= 0.00031890182075215186 and acc= 0.9231
 
 plt.figure()
 plt.plot([x for x in range(MaxIter)], accs, color="blue", label="Accuracy")
